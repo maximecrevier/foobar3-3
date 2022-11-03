@@ -1,3 +1,4 @@
+#function to manually solve inverse of matrix
 def transposeMatrix(m):
     return list(map(list,zip(*m)))
 
@@ -35,6 +36,7 @@ def getMatrixInverse(m):
             cofactors[r][c] = cofactors[r][c]/determinant
     return cofactors
 
+#solution code
 def solution(m):
     import numpy as np
     from fractions import Fraction
@@ -44,34 +46,38 @@ def solution(m):
     for i in m:
         if sum(i) == 0:
             width_q -= 1
-
+    
+    #remove terminal states from matrix
     m = [[Fraction(v,sum(i)) for v in i] for i in m if sum(i) != 0]
 
+    #solving for block q of matrix m
     q = m[:width_q]
     q = [i[:width_q] for i in q]
 
+    #create identity matrix
     id = np.identity(width_q)
     id = id.astype(int)
     id = id + Fraction()
-
+    
+    #solving for block r of matrix m
     r = m[:width_q]
     r = [i[width_q:] for i in r]
-
+    
+    #solving for fundamental matrix n
     n = np.subtract(id, q)
     n = getMatrixInverse(n)
-
+    
+    #probability matrix b, column n = probabilitities for starting transient state n
     b = np.matmul(n, r)
 
     [fractions_list] = b[:1].tolist()
 
-
+    #least common multiple of fractions
     lcm = np.lcm.reduce([fr.denominator for fr in fractions_list])
-
+    
+    #formatting output
     vals = [int(fr.numerator * lcm / fr.denominator) for fr in fractions_list]
     vals.append(lcm)
 
 
     return vals
-
-
-print(solution([[0, 2, 1, 0, 0], [0, 0, 0, 3, 4], [0, 0, 0, 0, 0], [0, 0, 0, 0,0], [0, 0, 0, 0, 0]]))
